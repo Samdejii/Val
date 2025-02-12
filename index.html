@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: pink;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            font-size: 2rem;
+        }
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        #yes {
+            background-color: whitesmoke;
+            color: #1fd866;
+            transition: all 0.3s ease;
+        }
+        #no {
+            background-color: #D81F5C;
+            color: whitesmoke;
+            width: 105px;
+            height: 40px;
+        }
+        #languageToggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #FFF9F0;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #image {
+            width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            font-style: italic;
+            font-weight: bold;
+        }
+        #instructionList {
+            text-align: left;
+        }
+        .close {
+            cursor: pointer;
+            color: red;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #imageModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        #imageModal img {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+        }
+        #imageModal p {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <button id="languageToggle" onclick="toggleLanguage()">🌍</button>
+   <!-- <img id="image" src="WhatsApp Image 2025-02-10 at 11.57.03_f0fce94a.jpg" alt="Love Icon">-->
+    <h1 id="question">Will you be my Valentine? ❤️</h1>
+    <div class="buttons" id="buttonContainer">
+        <button id="yes" onclick="yesClicked()">Yes</button>
+        <button id="no" onclick="noClicked()">No</button>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <img src="WhatsApp Image 2025-02-10 at 11.57.03_f0fce94a.jpg" alt="BB Bunny">
+            <p>Gotcha! Your response was sent to me 😂</p>
+            <em>The page will refresh in 10 seconds</em>
+        </div>
+    </div>
+
+    <div id="instructionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Instruction for use</h2>
+            <ul id="instructionList">
+                <p>Welcome to the Be My Valentine Website!</p>
+                <p>Take note of the instructions that will make your experience more enjoyable.</p>
+                <p>First things first you can leave this box by clicking on the cross mark above.</p>
+                <p>To Change the language simply click the 🌍 button above - you have a variety to pick from</p>
+                <p>You have the Yes and No button on the site</p>
+                <p>If you click No... hmmm okay</p>
+                <p>If you click No more than 2 times something will happen - Ill leave that to see if you will attempt to click the No button</p>
+                <p>If you click Yes you will also get to see something</p>
+                <p>Enjoy the ride!</p>
+                </p>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        emailjs.init("2zWn_qKDyiKES_f1P"); // Replace with your EmailJS Public Key
+
+        let yesButton = document.getElementById("yes");
+        let noButton = document.getElementById("no");
+        let buttonContainer = document.getElementById("buttonContainer");
+        let size = 20;
+        let responses = [];
+        let currentLanguage = 0;
+        let noClickCount = 0;
+        let swapped = false;
+        
+        // User-defined languages
+        let languages = [];
+
+        function addLanguage(text, yes, no) {
+            languages.push({ text, yes, no });
+        }
+
+        // Example: Add languages manually 
+        addLanguage("Will you be my Valentine? ❤️", "Yes", "No");
+        addLanguage("Howfa Big head, you no go like be my val? ❤️", "Def na", "Na ment!");
+        addLanguage("Ṣe iwọ yoo jẹ Falentaini mi? ❤️", "Bẹẹni", "Rara oo");
+        addLanguage("Za ki zama Valentine dina ❤️", "Eh", "A'a");
+        addLanguage("Seras-tu ma Saint-Valentin ❤️", "Oui", "Non");
+
+        function toggleLanguage() {
+            if (languages.length === 0) return;
+            currentLanguage = (currentLanguage + 1) % languages.length;
+            document.getElementById("question").innerText = languages[currentLanguage].text;
+            document.getElementById("yes").innerText = languages[currentLanguage].yes;
+            document.getElementById("no").innerText = languages[currentLanguage].no;
+        }
+
+        function sendEmail() {
+            let responseText = responses.join(", ");
+            
+            let emailParams = {
+                to_email: "adewumisam07@gmail.com", 
+                message: `Responses: ${responseText}`
+            };
+
+            emailjs.send("service_jqzcp5h", "template_5hd5g7h", emailParams)
+                .then(function(response) {
+                    document.getElementById("imageModal").style.display = "flex";
+                    setTimeout(() => {
+                        location.reload();
+                    }, 10000); // Refresh the page after email is sent
+                }, function(error) {
+                    alert("Failed to send email: " + JSON.stringify(error));
+                });
+        }
+
+        function yesClicked() {
+            alert("Yay! I love you! ❤️");
+            responses.push("yes");
+            sendEmail();
+        }
+
+        function noClicked() {
+            size += 10;
+            yesButton.style.fontSize = size + "px";
+            responses.push("no");
+            
+            noClickCount++;
+            let randomThreshold = Math.floor(Math.random() * 3) + 2; // Random shift between 2-4 clicks
+            if (noClickCount % randomThreshold === 0) {
+                swapButtons();
+            }
+        }
+
+        function swapButtons() {
+            swapped = !swapped;
+            buttonContainer.innerHTML = "";
+            if (swapped) {
+                buttonContainer.appendChild(noButton);
+                buttonContainer.appendChild(yesButton);
+            } else {
+                buttonContainer.appendChild(yesButton);
+                buttonContainer.appendChild(noButton);
+            }
+        }
+
+        function showModal() {
+            document.getElementById("instructionModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("instructionModal").style.display = "none";
+        }
+
+        setTimeout(showModal, 2000); // Show the modal after 5 seconds
+    </script>
+</body>
+</html>
